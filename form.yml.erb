@@ -1,0 +1,85 @@
+---
+cluster: <%= ENV.fetch("OOD_SELKIES_CLUSTER", "replace_me") %>
+attributes:
+  bc_num_hours:
+    label: Hours
+    value: 1
+    min: 1
+    max: 8
+    step: 1
+  bc_num_slots:
+    value: 1
+    fixed: true
+  bc_queue:
+    label: Partition
+    value: <%= ENV.fetch("OOD_SELKIES_DEFAULT_PARTITION", "interactive") %>
+    fixed: <%= ENV.fetch("OOD_SELKIES_PARTITION_FIXED", "false") %>
+  selkies_num_cores:
+    label: CPU cores
+    widget: select
+    value: "2"
+    options:
+      - ["2 cores", "2"]
+      - ["4 cores", "4"]
+      - ["8 cores", "8"]
+      - ["16 cores", "16"]
+      - ["32 cores", "32"]
+      - ["64 cores", "64"]
+  selkies_backend:
+    label: Display backend
+    widget: select
+    value: apptainer-rocky10-kde
+    options:
+      - ["Rocky 10 Apptainer KDE Plasma (PixelFlux)", "apptainer-rocky10-kde"]
+  selkies_resolution:
+    label: Resolution
+    widget: select
+    value: "1600x900"
+    options:
+      - ["1920 x 1080", "1920x1080"]
+      - ["1600 x 900", "1600x900"]
+      - ["1280 x 720", "1280x720"]
+      - ["1024 x 768", "1024x768"]
+  selkies_framerate:
+    label: Frame rate
+    widget: select
+    value: "20"
+    options:
+      - ["15 fps", "15"]
+      - ["20 fps", "20"]
+      - ["30 fps", "30"]
+  selkies_encoder:
+    label: Encoder
+    widget: select
+    value: x264enc-striped
+    options:
+      - ["JPEG", "jpeg"]
+      - ["H.264 x264enc", "x264enc"]
+      - ["H.264 x264enc striped", "x264enc-striped"]
+  selkies_h264_crf:
+    label: H.264 CRF
+    widget: select
+    value: "30"
+    options:
+      - ["25 higher quality", "25"]
+      - ["30 balanced", "30"]
+      - ["35 lower bandwidth", "35"]
+  selkies_paint_over_quality:
+    label: Static-frame polish
+    widget: select
+    value: "false"
+    options:
+      - ["Off, lower latency", "false"]
+      - ["On, sharper idle image", "true"]
+form:
+  - bc_num_hours
+  - bc_num_slots
+  - bc_queue
+  - selkies_num_cores
+  - selkies_backend
+  - selkies_resolution
+  - selkies_framerate
+  - selkies_encoder
+  - selkies_h264_crf
+  - selkies_paint_over_quality
+  - bc_email_on_started

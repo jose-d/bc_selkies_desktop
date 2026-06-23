@@ -1,0 +1,19 @@
+---
+batch_connect:
+  template: basic
+  script_wrapper: |
+    export SLURM_EXPORT_ENV=ALL
+    %s
+  before_script: |
+    port=$(find_port localhost 20000 65000)
+    password=$(create_passwd 24)
+    export port password
+  after_script: |
+    wait_until_port_used "localhost:${port}" 90
+script:
+  native:
+<%- if ENV.fetch("OOD_SELKIES_NODELIST", "").strip != "" -%>
+    - "--nodelist=<%= ENV.fetch("OOD_SELKIES_NODELIST").strip %>"
+<%- end -%>
+    - "--ntasks=1"
+    - "--cpus-per-task=<%= context.respond_to?(:selkies_num_cores) ? context.selkies_num_cores : "2" %>"

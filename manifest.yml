@@ -1,0 +1,9 @@
+---
+name: Selkies Desktop
+icon: fa://desktop
+category: Interactive Apps
+subcategory: Desktops
+role: batch_connect
+description: |
+  Launch a KDE Plasma desktop through Selkies/PixelFlux from an Apptainer
+  image on an HPC compute node.
