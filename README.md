@@ -14,6 +14,8 @@ every compute node.
 - Starts a nested KDE Plasma Wayland session on the PixelFlux Wayland socket.
 - Supports selectable CPU count, resolution, frame rate, encoder, H.264 CRF, and
   static-frame polish.
+- Supports selectable English/Czech keyboard layout through the Selkies Wayland
+  input keymap.
 - Defaults to WebSocket transport, per-session Selkies URL-token auth, software
   CPU encoding, no audio, no microphone, no gamepad input, and no local
   manual-resolution lock.
@@ -61,6 +63,9 @@ export OOD_SELKIES_NODELIST=""
 export OOD_SELKIES_WEB_ROOT="/opt/selkies-ood/web"
 export OOD_SELKIES_UI_TITLE="Selkies KDE Desktop"
 export OOD_SELKIES_WAYLAND_LIB="/opt/selkies-ood/wayland/lib64"
+export OOD_SELKIES_DEFAULT_KEYBOARD_LAYOUT="us"
+export OOD_SELKIES_KEYBOARD_VARIANT=""
+export OOD_SELKIES_KEYBOARD_OPTIONS=""
 ```
 
 Use `OOD_SELKIES_NODELIST` only for canary or test deployments that should pin
@@ -72,6 +77,7 @@ The main launch controls are in `form.yml.erb`:
 
 - `bc_queue`
 - `selkies_num_cores`
+- `selkies_keyboard_layout`
 - `selkies_resolution`
 - `selkies_framerate`
 - `selkies_encoder`
@@ -81,6 +87,12 @@ The main launch controls are in `form.yml.erb`:
 The runtime contract is in `template/script.sh.erb`. The script starts Selkies,
 waits for the PixelFlux Wayland socket, then starts the same Apptainer image
 again for the nested KDE desktop.
+
+Keyboard input is configured with `XKB_DEFAULT_LAYOUT`. The companion image
+patches Selkies so its Wayland input handler honors that variable instead of
+forcing a US keymap. This matters for layouts such as Czech where characters
+like `c` with caron, `s` with caron, and `r` with caron are not representable
+through the hardcoded US mapping.
 
 ## Testing
 

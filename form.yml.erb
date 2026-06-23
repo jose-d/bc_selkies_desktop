@@ -31,6 +31,13 @@ attributes:
     value: apptainer-rocky10-kde
     options:
       - ["Rocky 10 Apptainer KDE Plasma (PixelFlux)", "apptainer-rocky10-kde"]
+  selkies_keyboard_layout:
+    label: Keyboard layout
+    widget: select
+    value: <%= ENV.fetch("OOD_SELKIES_DEFAULT_KEYBOARD_LAYOUT", "us") %>
+    options:
+      - ["English", "us"]
+      - ["Czech", "cz"]
   selkies_resolution:
     label: Resolution
     widget: select
@@ -77,6 +84,7 @@ form:
   - bc_queue
   - selkies_num_cores
   - selkies_backend
+  - selkies_keyboard_layout
   - selkies_resolution
   - selkies_framerate
   - selkies_encoder

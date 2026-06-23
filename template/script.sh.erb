@@ -8,6 +8,7 @@ encoder="<%= context.selkies_encoder %>"
 framerate="<%= context.respond_to?(:selkies_framerate) ? context.selkies_framerate : "20" %>"
 h264_crf="<%= context.respond_to?(:selkies_h264_crf) ? context.selkies_h264_crf : "30" %>"
 paint_over_quality="<%= context.respond_to?(:selkies_paint_over_quality) ? context.selkies_paint_over_quality : "false" %>"
+keyboard_layout="<%= context.respond_to?(:selkies_keyboard_layout) ? context.selkies_keyboard_layout : ENV.fetch("OOD_SELKIES_DEFAULT_KEYBOARD_LAYOUT", "us") %>"
 
 image="${OOD_SELKIES_IMAGE:-/opt/selkies-ood/containers/rocky10-plasma-selfcontained.sif}"
 selkies_web_root="${OOD_SELKIES_WEB_ROOT:-/opt/selkies-ood/web}"
@@ -48,6 +49,11 @@ export WAYLAND_DISPLAY="wayland-0"
 export XDG_SESSION_TYPE="wayland"
 export GDK_BACKEND="wayland"
 export QT_QPA_PLATFORM="wayland"
+export LANG="${OOD_SELKIES_LANG:-C.UTF-8}"
+export LC_ALL="${OOD_SELKIES_LC_ALL:-C.UTF-8}"
+export XKB_DEFAULT_LAYOUT="${keyboard_layout}"
+export XKB_DEFAULT_VARIANT="${OOD_SELKIES_KEYBOARD_VARIANT:-}"
+export XKB_DEFAULT_OPTIONS="${OOD_SELKIES_KEYBOARD_OPTIONS:-}"
 unset DISPLAY
 
 selkies_wayland_lib="${OOD_SELKIES_WAYLAND_LIB:-/opt/selkies-ood/wayland/lib64}"
@@ -91,8 +97,8 @@ trap cleanup EXIT INT TERM
 dump_display_diagnostics() {
   echo "===== Selkies KDE diagnostics ====="
   date
-  echo "resolution=${width}x${height} encoder=${encoder} framerate=${framerate} h264_crf=${h264_crf}"
-  env | sort | grep -E '^(DISPLAY|WAYLAND_DISPLAY|XDG_|GDK_BACKEND|QT_QPA_PLATFORM|PIXELFLUX|SELKIES|GST_|LD_LIBRARY_PATH)=' || true
+  echo "resolution=${width}x${height} encoder=${encoder} framerate=${framerate} h264_crf=${h264_crf} keyboard_layout=${keyboard_layout}"
+  env | sort | grep -E '^(DISPLAY|WAYLAND_DISPLAY|XDG_|GDK_BACKEND|QT_QPA_PLATFORM|PIXELFLUX|SELKIES|GST_|LD_LIBRARY_PATH|LANG|LC_ALL|XKB_DEFAULT_)=' || true
   echo "--- process tree candidates ---"
   ps -u "${USER}" -o pid,ppid,stat,etime,args | grep -E 'selkies|kwin|plasma|kded|Xwayland|terminal|dolphin|apptainer' | grep -v grep || true
   echo "--- wayland sockets ---"
