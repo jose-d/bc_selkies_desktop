@@ -20,9 +20,8 @@ export SELKIES_WEB_ROOT="${selkies_web_root}"
 export SELKIES_MODE="websockets"
 export SELKIES_ENABLE_DUAL_MODE="false"
 export SELKIES_ENABLE_HTTPS="false"
-export SELKIES_ENABLE_BASIC_AUTH="true"
-export SELKIES_BASIC_AUTH_USER="${USER}"
-export SELKIES_BASIC_AUTH_PASSWORD="${password:?OOD did not provide a password}"
+export SELKIES_ENABLE_BASIC_AUTH="false"
+export SELKIES_MASTER_TOKEN="${password:?OOD did not provide a password}"
 export SELKIES_AUDIO_ENABLED="false"
 export SELKIES_MICROPHONE_ENABLED="false"
 export SELKIES_GAMEPAD_ENABLED="false"
@@ -140,6 +139,30 @@ echo "Starting Selkies PixelFlux server on ${SELKIES_ADDR}:${SELKIES_PORT} (${wi
 "${selkies_cmd[@]}" &
 selkies_pid="$!"
 pids+=("${selkies_pid}")
+
+echo "Configuring Selkies token authentication..."
+token_payload=$(printf '{"%s":{"role":"controller","mk_control":true}}' "${password}")
+token_configured=false
+for _ in $(seq 1 100); do
+  if curl -fsS \
+      -H "Authorization: Bearer ${SELKIES_MASTER_TOKEN}" \
+      -H "Content-Type: application/json" \
+      -d "${token_payload}" \
+      "http://127.0.0.1:${SELKIES_PORT}/tokens" >/dev/null; then
+    token_configured=true
+    echo "Selkies token authentication configured."
+    break
+  fi
+  if ! kill -0 "${selkies_pid}" 2>/dev/null; then
+    wait "${selkies_pid}"
+    exit $?
+  fi
+  sleep 0.1
+done
+if [[ "${token_configured}" != "true" ]]; then
+  echo "Failed to configure Selkies token authentication." >&2
+  exit 1
+fi
 
 echo "Waiting for PixelFlux Wayland socket in ${XDG_RUNTIME_DIR}..."
 WAYLAND_DISPLAY="$(wait_for_pixelflux_socket "${socket_snapshot}")"
