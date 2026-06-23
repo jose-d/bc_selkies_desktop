@@ -14,8 +14,9 @@ every compute node.
 - Starts a nested KDE Plasma Wayland session on the PixelFlux Wayland socket.
 - Supports selectable CPU count, resolution, frame rate, encoder, H.264 CRF, and
   static-frame polish.
-- Defaults to WebSocket transport, software CPU encoding, no audio, no
-  microphone, no gamepad input, and no local manual-resolution lock.
+- Defaults to WebSocket transport, per-session Basic Auth, software CPU
+  encoding, no audio, no microphone, no gamepad input, and no local
+  manual-resolution lock.
 
 ## Requirements
 
@@ -92,6 +93,10 @@ resolution. The session log should show:
 - an active stream line such as `Mode: H264 (CPU)`
 
 The OOD session card should open `/rnode/<host>/<port>/`.
+
+The Selkies server also requires browser Basic Auth. Use the username and
+password shown on the OOD session card. The password is generated per session by
+Open OnDemand.
 
 ## Troubleshooting
 
