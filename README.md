@@ -14,8 +14,8 @@ every compute node.
 - Starts a nested KDE Plasma Wayland session on the PixelFlux Wayland socket.
 - Supports selectable CPU count, resolution, frame rate, encoder, H.264 CRF, and
   static-frame polish.
-- Supports selectable English/Czech keyboard layout through the Selkies Wayland
-  input keymap.
+- Includes an experimental English/Czech keyboard layout selector for the
+  Selkies Wayland input keymap.
 - Defaults to WebSocket transport, per-session Selkies URL-token auth, software
   CPU encoding, no audio, no microphone, no gamepad input, and no local
   manual-resolution lock.
@@ -33,7 +33,7 @@ every compute node.
   node port.
 
 The companion image definition used during development is maintained separately
-from this app repository.
+at <https://github.com/jose-d/selkies-ood-apptainer-rocky10-plasma>.
 
 ## Installation
 
@@ -88,11 +88,10 @@ The runtime contract is in `template/script.sh.erb`. The script starts Selkies,
 waits for the PixelFlux Wayland socket, then starts the same Apptainer image
 again for the nested KDE desktop.
 
-Keyboard input is configured with `XKB_DEFAULT_LAYOUT`. The companion image
-patches Selkies so its Wayland input handler honors that variable instead of
-forcing a US keymap. This matters for layouts such as Czech where characters
-like `c` with caron, `s` with caron, and `r` with caron are not representable
-through the hardcoded US mapping.
+Keyboard input is configured with `XKB_DEFAULT_LAYOUT`. The companion image from
+<https://github.com/jose-d/selkies-ood-apptainer-rocky10-plasma> patches
+Selkies so its Wayland input handler can read that variable instead of forcing a
+US keymap. This path is still experimental; see the known limitation below.
 
 ## Testing
 
@@ -133,3 +132,6 @@ disable clipboard support in `template/script.sh.erb`.
   disabled by default.
 - The shipped form has one KDE/Apptainer backend option. Additional backends can
   be added as site-specific extensions.
+- The English/Czech keyboard layout selector is currently known to produce
+  incorrect output for some keys. Track this in
+  <https://github.com/jose-d/bc_selkies_desktop/issues/1>.
