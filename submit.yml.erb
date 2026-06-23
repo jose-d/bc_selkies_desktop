@@ -12,8 +12,8 @@ batch_connect:
     wait_until_port_used "localhost:${port}" 90
 script:
   native:
-<%- if ENV.fetch("OOD_SELKIES_NODELIST", "").strip != "" -%>
+<% if ENV.fetch("OOD_SELKIES_NODELIST", "").strip != "" %>
     - "--nodelist=<%= ENV.fetch("OOD_SELKIES_NODELIST").strip %>"
-<%- end -%>
+<% end %>
     - "--ntasks=1"
     - "--cpus-per-task=<%= context.respond_to?(:selkies_num_cores) ? context.selkies_num_cores : "2" %>"
