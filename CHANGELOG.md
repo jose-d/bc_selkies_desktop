@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 - 2026-06-23
+
+- Use portable ERB control tags in `submit.yml.erb` for compatibility with the
+  standard Ruby ERB parser used on Rocky 10.
+- Clarify that Open OnDemand 4.x deployments can set app environment variables
+  through `pun_custom_env` in `nginx_stage.yml`.
+
 ## 0.1.0 - 2026-06-23
 
 - Initial published Batch Connect app layout.

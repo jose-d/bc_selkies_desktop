@@ -47,6 +47,10 @@ git clone https://github.com/jose-d/bc_selkies_desktop.git
 Then configure the app for your site by setting environment variables in the
 OOD service environment, app wrapper, or another site policy mechanism.
 
+For Open OnDemand 4.x system deployments, one common system-wide location is
+`pun_custom_env` in `/etc/ood/config/nginx_stage.yml`. Restart affected PUNs
+after changing that file so the dashboard process sees the new environment.
+
 Required site settings:
 
 ```bash
