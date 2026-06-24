@@ -1,5 +1,22 @@
 ---
-cluster: <%= ENV.fetch("OOD_SELKIES_CLUSTER", "replace_me") %>
+<%
+require "yaml"
+
+config_path = "/etc/ood/config/apps/bc_selkies_desktop/config.yml"
+defaults = {
+  "cluster" => "replace_me",
+  "default_partition" => "interactive",
+  "partition_fixed" => false,
+  "default_keyboard_layout" => "us"
+}
+site_config = if File.file?(config_path)
+  YAML.safe_load(File.read(config_path), aliases: false) || {}
+else
+  {}
+end
+config = defaults.merge(site_config.transform_keys(&:to_s))
+%>
+cluster: <%= config.fetch("cluster") %>
 attributes:
   bc_num_hours:
     label: Hours
@@ -12,8 +29,8 @@ attributes:
     fixed: true
   bc_queue:
     label: Partition
-    value: <%= ENV.fetch("OOD_SELKIES_DEFAULT_PARTITION", "interactive") %>
-    fixed: <%= ENV.fetch("OOD_SELKIES_PARTITION_FIXED", "false") %>
+    value: <%= config.fetch("default_partition") %>
+    fixed: <%= config.fetch("partition_fixed") %>
   selkies_num_cores:
     label: CPU cores
     widget: select
@@ -34,7 +51,7 @@ attributes:
   selkies_keyboard_layout:
     label: Keyboard layout
     widget: select
-    value: <%= ENV.fetch("OOD_SELKIES_DEFAULT_KEYBOARD_LAYOUT", "us") %>
+    value: <%= config.fetch("default_keyboard_layout") %>
     options:
       - ["English", "us"]
       - ["Czech", "cz"]

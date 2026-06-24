@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
+<%
+require "shellwords"
+require "yaml"
+
+config_path = "/etc/ood/config/apps/bc_selkies_desktop/config.yml"
+defaults = {
+  "image" => "/cvmfs/c9.phoebe.lan/cont/selkies-ood/rocky10-plasma-selfcontained_20260624.sif",
+  "web_root" => "/opt/selkies-ood/web",
+  "ui_title" => "Selkies KDE Desktop",
+  "wayland_lib" => "/opt/selkies-ood/wayland/lib64",
+  "lang" => "C.UTF-8",
+  "lc_all" => "C.UTF-8",
+  "default_keyboard_layout" => "us",
+  "keyboard_variant" => "",
+  "keyboard_options" => ""
+}
+site_config = if File.file?(config_path)
+  YAML.safe_load(File.read(config_path), aliases: false) || {}
+else
+  {}
+end
+config = defaults.merge(site_config.transform_keys(&:to_s))
+%>
 
 resolution="<%= context.selkies_resolution %>"
 width="${resolution%x*}"
@@ -8,11 +31,11 @@ encoder="<%= context.selkies_encoder %>"
 framerate="<%= context.respond_to?(:selkies_framerate) ? context.selkies_framerate : "20" %>"
 h264_crf="<%= context.respond_to?(:selkies_h264_crf) ? context.selkies_h264_crf : "30" %>"
 paint_over_quality="<%= context.respond_to?(:selkies_paint_over_quality) ? context.selkies_paint_over_quality : "false" %>"
-keyboard_layout="<%= context.respond_to?(:selkies_keyboard_layout) ? context.selkies_keyboard_layout : ENV.fetch("OOD_SELKIES_DEFAULT_KEYBOARD_LAYOUT", "us") %>"
+keyboard_layout="<%= context.respond_to?(:selkies_keyboard_layout) ? context.selkies_keyboard_layout : config.fetch("default_keyboard_layout") %>"
 
-image="${OOD_SELKIES_IMAGE:-/opt/selkies-ood/containers/rocky10-plasma-selfcontained.sif}"
-selkies_web_root="${OOD_SELKIES_WEB_ROOT:-/opt/selkies-ood/web}"
-selkies_title="${OOD_SELKIES_UI_TITLE:-Selkies KDE Desktop}"
+image=<%= Shellwords.escape(config.fetch("image").to_s) %>
+selkies_web_root=<%= Shellwords.escape(config.fetch("web_root").to_s) %>
+selkies_title=<%= Shellwords.escape(config.fetch("ui_title").to_s) %>
 runtime_root="${TMPDIR:-/tmp}/selkies-${USER}-${SLURM_JOB_ID:-$$}"
 
 export SELKIES_ADDR="0.0.0.0"
@@ -49,14 +72,14 @@ export WAYLAND_DISPLAY="wayland-0"
 export XDG_SESSION_TYPE="wayland"
 export GDK_BACKEND="wayland"
 export QT_QPA_PLATFORM="wayland"
-export LANG="${OOD_SELKIES_LANG:-C.UTF-8}"
-export LC_ALL="${OOD_SELKIES_LC_ALL:-C.UTF-8}"
+export LANG=<%= Shellwords.escape(config.fetch("lang").to_s) %>
+export LC_ALL=<%= Shellwords.escape(config.fetch("lc_all").to_s) %>
 export XKB_DEFAULT_LAYOUT="${keyboard_layout}"
-export XKB_DEFAULT_VARIANT="${OOD_SELKIES_KEYBOARD_VARIANT:-}"
-export XKB_DEFAULT_OPTIONS="${OOD_SELKIES_KEYBOARD_OPTIONS:-}"
+export XKB_DEFAULT_VARIANT=<%= Shellwords.escape(config.fetch("keyboard_variant").to_s) %>
+export XKB_DEFAULT_OPTIONS=<%= Shellwords.escape(config.fetch("keyboard_options").to_s) %>
 unset DISPLAY
 
-selkies_wayland_lib="${OOD_SELKIES_WAYLAND_LIB:-/opt/selkies-ood/wayland/lib64}"
+selkies_wayland_lib=<%= Shellwords.escape(config.fetch("wayland_lib").to_s) %>
 if [[ -d "${selkies_wayland_lib}" ]]; then
   export LD_LIBRARY_PATH="${selkies_wayland_lib}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 fi

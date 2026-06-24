@@ -47,33 +47,47 @@ git clone https://github.com/jose-d/bc_selkies_desktop.git
 Then configure the app for your site by setting environment variables in the
 OOD service environment, app wrapper, or another site policy mechanism.
 
-For Open OnDemand 4.x system deployments, one common system-wide location is
-`pun_custom_env` in `/etc/ood/config/nginx_stage.yml`. Restart affected PUNs
-after changing that file so the dashboard process sees the new environment.
-
-Required site settings:
+For Open OnDemand 4.x system deployments, put site-specific settings in:
 
 ```bash
-export OOD_SELKIES_CLUSTER="your_ood_cluster_name"
-export OOD_SELKIES_DEFAULT_PARTITION="interactive"
-export OOD_SELKIES_IMAGE="/path/to/rocky10-plasma-selfcontained.sif"
+/etc/ood/config/apps/bc_selkies_desktop/config.yml
 ```
 
-Optional settings:
+Example:
 
-```bash
-export OOD_SELKIES_PARTITION_FIXED="false"
-export OOD_SELKIES_NODELIST=""
-export OOD_SELKIES_WEB_ROOT="/opt/selkies-ood/web"
-export OOD_SELKIES_UI_TITLE="Selkies KDE Desktop"
-export OOD_SELKIES_WAYLAND_LIB="/opt/selkies-ood/wayland/lib64"
-export OOD_SELKIES_DEFAULT_KEYBOARD_LAYOUT="us"
-export OOD_SELKIES_KEYBOARD_VARIANT=""
-export OOD_SELKIES_KEYBOARD_OPTIONS=""
+```yaml
+---
+cluster: koiosv2
+default_partition: cpu_int
+partition_fixed: false
+nodelist: ""
+image: /cvmfs/c9.phoebe.lan/cont/selkies-ood/rocky10-plasma-selfcontained_20260624.sif
+web_root: /opt/selkies-ood/web
+ui_title: Koios Selkies KDE
+wayland_lib: /opt/selkies-ood/wayland/lib64
+lang: C.UTF-8
+lc_all: C.UTF-8
+default_keyboard_layout: cz
+keyboard_variant: ""
+keyboard_options: ""
 ```
 
-Use `OOD_SELKIES_NODELIST` only for canary or test deployments that should pin
-sessions to a specific compute node.
+Config keys:
+
+- `cluster`: Open OnDemand cluster id.
+- `default_partition`: default Slurm partition shown in the form.
+- `partition_fixed`: whether users can change the partition.
+- `nodelist`: optional Slurm nodelist for canary or test deployments.
+- `image`: Apptainer SIF path visible from compute nodes.
+- `web_root`: Selkies web assets path inside the image.
+- `ui_title`: Selkies browser UI title.
+- `wayland_lib`: optional host-side Wayland library path.
+- `lang` / `lc_all`: locale exported inside the job.
+- `default_keyboard_layout`, `keyboard_variant`, `keyboard_options`: XKB settings.
+
+If `image` is unset, the app defaults to the CVMFS SIF shown above.
+Use `nodelist` only for canary or test deployments that should pin sessions to a
+specific compute node.
 
 ## Configuration
 
@@ -119,7 +133,7 @@ If the session fails before the Connect button appears, check that Slurm can
 start the job and that the requested partition or optional nodelist is valid.
 
 If the session log reports `Missing Apptainer image`, set
-`OOD_SELKIES_IMAGE` to the path visible from the compute node.
+`image` in `config.yml` to the path visible from the compute node.
 
 If the browser opens but shows a black screen, inspect the session log for
 PixelFlux, Wayland socket, and encoder messages. Start with a lower resolution

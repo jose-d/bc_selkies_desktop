@@ -1,0 +1,14 @@
+---
+cluster: koiosv2
+default_partition: cpu_int
+partition_fixed: false
+nodelist: ""
+image: /cvmfs/c9.phoebe.lan/cont/selkies-ood/rocky10-plasma-selfcontained_20260624.sif
+web_root: /opt/selkies-ood/web
+ui_title: Koios Selkies KDE
+wayland_lib: /opt/selkies-ood/wayland/lib64
+lang: C.UTF-8
+lc_all: C.UTF-8
+default_keyboard_layout: cz
+keyboard_variant: ""
+keyboard_options: ""

@@ -1,4 +1,19 @@
 ---
+<%
+require "yaml"
+
+config_path = "/etc/ood/config/apps/bc_selkies_desktop/config.yml"
+defaults = {
+  "nodelist" => ""
+}
+site_config = if File.file?(config_path)
+  YAML.safe_load(File.read(config_path), aliases: false) || {}
+else
+  {}
+end
+config = defaults.merge(site_config.transform_keys(&:to_s))
+nodelist = config.fetch("nodelist").to_s.strip
+%>
 batch_connect:
   template: basic
   script_wrapper: |
@@ -12,8 +27,8 @@ batch_connect:
     wait_until_port_used "localhost:${port}" 90
 script:
   native:
-<% if ENV.fetch("OOD_SELKIES_NODELIST", "").strip != "" %>
-    - "--nodelist=<%= ENV.fetch("OOD_SELKIES_NODELIST").strip %>"
+<% if nodelist != "" %>
+    - "--nodelist=<%= nodelist %>"
 <% end %>
     - "--ntasks=1"
     - "--cpus-per-task=<%= context.respond_to?(:selkies_num_cores) ? context.selkies_num_cores : "2" %>"
