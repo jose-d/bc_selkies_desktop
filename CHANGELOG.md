@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 - 2026-06-24
+
+- Run the rendered Batch Connect script with `bash` from `submit.yml.erb` so
+  launch does not depend on the staged `script.sh` executable bit.
+
 ## 0.1.1 - 2026-06-23
 
 - Use portable ERB control tags in `submit.yml.erb` for compatibility with the

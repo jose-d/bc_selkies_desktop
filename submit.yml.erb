@@ -3,7 +3,7 @@ batch_connect:
   template: basic
   script_wrapper: |
     export SLURM_EXPORT_ENV=ALL
-    %s
+    bash %s
   before_script: |
     port=$(find_port localhost 20000 65000)
     password=$(create_passwd 24)
